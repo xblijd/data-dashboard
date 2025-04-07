@@ -1,132 +1,131 @@
 :root {
-    --bg: #e6f0fa;
-    --text: #0a1c33;
-    --card: #ffffff;
-    --shadow: rgba(0, 0, 0, 0.1);
-    --accent: #2980b9;
-    --accent-bg: rgba(41, 128, 185, 0.2);
-  }
-  
-  body.dark {
-    --bg: #0d1b2a;
-    --text: #dce7f5;
-    --card: #1b263b;
-    --shadow: rgba(0, 0, 0, 0.5);
-    --accent: #3a86ff;
-    --accent-bg: rgba(58, 134, 255, 0.2);
-  }
-  
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    margin: 0;
-    padding: 2rem;
-    transition: background 0.3s, color 0.3s;
-  }
-  
-  header {
-    max-width: 800px;
-    margin: 0 auto 2rem auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .controls {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .time-filters {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  
-  .time-filters button {
-    background: var(--card);
-    border: 1px solid #ccc;
-    padding: 0.4rem 0.8rem;
-    border-radius: 5px;
-    cursor: pointer;
-    color: var(--text);
-    transition: background 0.3s;
-  }
-  
-  .time-filters button.active {
-    background: var(--accent);
-    color: white;
-  }
-  
-  h1 {
-    font-size: 2rem;
-    margin: 0;
-  }
-  
-  select, button {
-    padding: 0.5rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: var(--card);
-    color: var(--text);
-    transition: background 0.3s, color 0.3s;
-  }
-  
-  button {
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 4px var(--shadow);
-  }
-  
-  #dashboard {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    margin-bottom: 2rem;
-  }
-  
-  .coin {
-    background: var(--card);
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px var(--shadow);
-    font-weight: bold;
-    min-width: 150px;
-    text-align: center;
-    animation: fadeIn 0.5s ease-in-out forwards;
-    opacity: 0;
-  }
-  
-  .chart-container {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    height: 400px;
-    margin: 0 auto;
-    background: var(--card);
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px var(--shadow);
-    animation: fadeIn 1s forwards;
-  }
-  
-  canvas {
-    width: 100% !important;
-    height: 100% !important;
-  }
-  
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-      transform: none;
-    }
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-  }
-  
+  --text: #0a1c33;
+  --bg-main: #e6f0fa;
+  --bg-header-light: #cce0f5;
+  --bg-header-dark: #2b4a71;
+  --bg-footer: #b0c4de;
+  --card: #ffffff;
+  --accent: #2d6cdf;
+  --accent-bg: rgba(45, 108, 223, 0.2);
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+body.dark {
+  --text: #e0e8f5;
+  --bg-main: #0b1d31;
+  --bg-header-light: #122a45;
+  --bg-header-dark: #0a2340;
+  --bg-footer: #1b3a5a;
+  --card: #1e2f47;
+  --accent: #4f9dff;
+  --accent-bg: rgba(79, 157, 255, 0.2);
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg-main);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* HEADER */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px var(--shadow);
+  transition: background-color 0.4s ease;
+  background-color: var(--bg-header-light);
+}
+.header.scrolled {
+  background-color: var(--bg-header-dark); /* Darker color when scrolled */
+  transition: background-color 0.4s ease;
+}
+.header-content {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* MAIN */
+.main-content {
+  padding-top: 8rem; /* Adjust this value to match the height of the header */
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-inline: 2rem;
+}
+.intro {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.chart-section {
+  text-align: center;
+}
+.price-info {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  background: var(--card);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px var(--shadow);
+  width: fit-content;
+  margin-inline: auto;
+}
+.chart-container {
+  background: var(--card);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px var(--shadow);
+  width: 66%;
+  max-width: 900px;
+  margin: 0 auto 2rem auto;
+  height: 400px;
+}
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* FILTERS */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+select, button {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: var(--card);
+  color: var(--text);
+  transition: background 0.3s;
+  cursor: pointer;
+}
+button.active {
+  background: var(--accent);
+  color: white;
+}
+.time-filters button {
+  border: none;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+/* FOOTER */
+.footer {
+  background-color: var(--bg-footer);
+  text-align: center;
+  padding: 1.5rem 2rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  box-shadow: 0 -2px 4px var(--shadow);
+  margin-top: 4rem;
+}

@@ -5,14 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crypto Koersen Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- 📊 Chart.js en plugins -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+
+  <!-- ✅ Registratie van Candlestick support -->
+  <script>
+    Chart.register(
+      Chart.FinancialController,
+      Chart.OHLCController,
+      Chart.CandlestickController,
+      Chart.FinancialElement,
+      Chart.OHLCElement,
+      Chart.CandlestickElement,
+      Chart.TimeScale,
+      Chart.LinearScale,
+      Chart.Tooltip,
+      Chart.Title
+    );
+  </script>
 </head>
 <body>
-  <header>
-    <h1>📈 Crypto Koersen Dashboard</h1>
+  <header class="header">
+    <div class="header-content">
+      <h1>📈 Crypto Koersen Dashboard</h1>
+    </div>
+  </header>
 
-    <div class="controls">
+  <main class="main-content">
+    <section class="intro observer-section" data-header-color="var(--bg-header-light)">
+      <p>Bekijk actuele crypto-koersen en interactieve prijsgrafieken met filtering per munt, tijd en charttype.</p>
+    </section>
+
+    <section class="chart-section observer-section" data-header-color="var(--bg-header-dark)">
+      <div class="price-info" id="dashboard">Laden...</div>
+      <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+      </div>
+    </section>
+
+    <section class="filters observer-section" data-header-color="var(--bg-header-light)">
       <label for="coinFilter">Kies een coin:</label>
       <select id="coinFilter">
         <option value="bitcoin">Bitcoin</option>
@@ -20,32 +55,30 @@
         <option value="cardano">Cardano</option>
       </select>
 
+      <label>Periode:</label>
       <div class="time-filters">
         <button data-days="1">1D</button>
         <button data-days="7" class="active">7D</button>
+        <button data-days="14">14D</button>
         <button data-days="30">30D</button>
         <button data-days="90">90D</button>
-        <button data-days="365">1Y</button>
+        <button data-days="180">180D</button>
       </div>
 
-      <div class="chart-type">
-        <label for="chartType">Chart Type:</label>
-        <select id="chartType">
-          <option value="line">Lijn</option>
-          <option value="bar">Staaf</option>
-          <option value="candlestick">Candlestick</option>
-        </select>
-      </div>
+      <label for="chartType">Chart Type:</label>
+      <select id="chartType">
+        <option value="line">Lijn</option>
+        <option value="bar">Staaf</option>
+        <option value="candlestick">Candlestick</option>
+      </select>
 
       <button id="toggleTheme">🌙 Donkere modus</button>
-    </div>
-  </header>
+    </section>
+  </main>
 
-  <section id="dashboard">Laden...</section>
-
-  <section class="chart-container">
-    <canvas id="priceChart"></canvas>
-  </section>
+  <footer class="footer observer-section" data-header-color="var(--bg-footer)">
+    <p>&copy; 2025 Crypto Dashboard | Gemaakt door Xavier</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
