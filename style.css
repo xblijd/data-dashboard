@@ -1,0 +1,132 @@
+:root {
+    --bg: #e6f0fa;
+    --text: #0a1c33;
+    --card: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --accent: #2980b9;
+    --accent-bg: rgba(41, 128, 185, 0.2);
+  }
+  
+  body.dark {
+    --bg: #0d1b2a;
+    --text: #dce7f5;
+    --card: #1b263b;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --accent: #3a86ff;
+    --accent-bg: rgba(58, 134, 255, 0.2);
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 2rem;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  header {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .time-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .time-filters button {
+    background: var(--card);
+    border: 1px solid #ccc;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    color: var(--text);
+    transition: background 0.3s;
+  }
+  
+  .time-filters button.active {
+    background: var(--accent);
+    color: white;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    margin: 0;
+  }
+  
+  select, button {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: var(--card);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  button {
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px var(--shadow);
+  }
+  
+  #dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  
+  .coin {
+    background: var(--card);
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px var(--shadow);
+    font-weight: bold;
+    min-width: 150px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out forwards;
+    opacity: 0;
+  }
+  
+  .chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    margin: 0 auto;
+    background: var(--card);
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px var(--shadow);
+    animation: fadeIn 1s forwards;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  

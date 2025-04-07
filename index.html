@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Koersen Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+</head>
+<body>
+  <header>
+    <h1>📈 Crypto Koersen Dashboard</h1>
+
+    <div class="controls">
+      <label for="coinFilter">Kies een coin:</label>
+      <select id="coinFilter">
+        <option value="bitcoin">Bitcoin</option>
+        <option value="ethereum">Ethereum</option>
+        <option value="cardano">Cardano</option>
+      </select>
+
+      <div class="time-filters">
+        <button data-days="1">1D</button>
+        <button data-days="7" class="active">7D</button>
+        <button data-days="30">30D</button>
+        <button data-days="90">90D</button>
+        <button data-days="365">1Y</button>
+      </div>
+
+      <div class="chart-type">
+        <label for="chartType">Chart Type:</label>
+        <select id="chartType">
+          <option value="line">Lijn</option>
+          <option value="bar">Staaf</option>
+          <option value="candlestick">Candlestick</option>
+        </select>
+      </div>
+
+      <button id="toggleTheme">🌙 Donkere modus</button>
+    </div>
+  </header>
+
+  <section id="dashboard">Laden...</section>
+
+  <section class="chart-container">
+    <canvas id="priceChart"></canvas>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
