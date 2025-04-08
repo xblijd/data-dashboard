@@ -29,15 +29,45 @@
   </script>
 </head>
 <body>
-  <header class="header">
-    <div class="header-content">
-      <h1>📈 Crypto Koersen Dashboard</h1>
+  <header class="header sticky-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>DV Crypto DB</h1>
+      </div>
+      <nav class="nav-links">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#compare">Compare</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="theme-toggle">
+        <button id="toggleTheme">Thema</button>
+      </div>
     </div>
   </header>
 
   <main class="main-content">
-    <section class="intro observer-section" data-header-color="var(--bg-header-light)">
-      <p>Bekijk actuele crypto-koersen en interactieve prijsgrafieken met filtering per munt, tijd en charttype.</p>
+    <section class="hero observer-section" data-header-color="var(--bg-header-light)">
+      <div class="hero-content">
+        <h2>Crypto Data Dashboard</h2>
+        <p>
+          Deze website is een persoonlijk leerproject waarin ik mijn vaardigheden op het gebied van datavisualisatie, webdevelopment 
+          en data-analyse verder ontwikkel. Aan de hand van actuele cryptogegevens – zoals prijzen, volumes en marktkapitalisatie – 
+          experimenteer ik met verschillende grafiekvormen en interactieve elementen.
+        </p>
+        <p>
+          Naast het visualiseren van historische en realtime gegevens, werk ik aan een uitbreiding waarbij ik een 
+          <strong>machine learning model</strong> train om de prijs van Bitcoin 24 uur vooruit te voorspellen. 
+          Hiervoor verzamel en verwerk ik historische prijsdata en combineer ik deze met technische indicatoren.
+        </p>
+        <p>
+          Het uiteindelijke doel is om een duidelijk, gebruiksvriendelijk dashboard te creëren dat zowel informatief als interactief is — 
+          en tegelijkertijd dient als portfolio-item waarin mijn ontwikkeling richting data science en engineering zichtbaar wordt.
+        </p>
+        <p class="highlight">
+          Leren door te bouwen, visualiseren en voorspellen met echte data.
+        </p>
+      </div>
     </section>
 
     <section class="chart-section observer-section" data-header-color="var(--bg-header-dark)">
@@ -48,14 +78,14 @@
     </section>
 
     <section class="filters observer-section" data-header-color="var(--bg-header-light)">
-      <label for="coinFilter">Kies een coin:</label>
+      <label for="coinFilter">Selecteer munt:</label>
       <select id="coinFilter">
         <option value="bitcoin">Bitcoin</option>
         <option value="ethereum">Ethereum</option>
         <option value="cardano">Cardano</option>
       </select>
 
-      <label>Periode:</label>
+      <label>Tijdsperiode:</label>
       <div class="time-filters">
         <button data-days="1">1D</button>
         <button data-days="7" class="active">7D</button>
@@ -65,19 +95,17 @@
         <button data-days="180">180D</button>
       </div>
 
-      <label for="chartType">Chart Type:</label>
+      <label for="chartType">Grafiektype:</label>
       <select id="chartType">
         <option value="line">Lijn</option>
         <option value="bar">Staaf</option>
         <option value="candlestick">Candlestick</option>
       </select>
-
-      <button id="toggleTheme">🌙 Donkere modus</button>
     </section>
   </main>
 
   <footer class="footer observer-section" data-header-color="var(--bg-footer)">
-    <p>&copy; 2025 Crypto Dashboard | Gemaakt door Xavier</p>
+    <p>&copy; 2025 Data Visualization Practice | Gemaakt door Xavier</p>
   </footer>
 
   <script src="script.js"></script>

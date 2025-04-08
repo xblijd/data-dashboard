@@ -1,8 +1,10 @@
 :root {
   --text: #0a1c33;
   --bg-main: #e6f0fa;
-  --bg-header-light: #cce0f5;
-  --bg-header-dark: #2b4a71;
+  --bg-header-light: #e6f0fa;
+  --bg-header-dark: #cce0f5;
+  --bg-hero: #cce0f5;
+  --bg-chart: #e6f0fa;
   --bg-footer: #b0c4de;
   --card: #ffffff;
   --accent: #2d6cdf;
@@ -13,8 +15,10 @@
 body.dark {
   --text: #e0e8f5;
   --bg-main: #0b1d31;
-  --bg-header-light: #122a45;
-  --bg-header-dark: #0a2340;
+  --bg-header-light: #0b1d31;
+  --bg-header-dark: #1b2f4a;
+  --bg-hero: #1b2f4a;
+  --bg-chart: #0b1d31;
   --bg-footer: #1b3a5a;
   --card: #1e2f47;
   --accent: #4f9dff;
@@ -24,47 +28,123 @@ body.dark {
 
 body {
   margin: 0;
+  padding: 0;
   font-family: 'Segoe UI', sans-serif;
   background: var(--bg-main);
   color: var(--text);
   transition: background 0.3s, color 0.3s;
 }
 
-/* HEADER */
+/* ========== HEADER ========== */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 4px var(--shadow);
-  transition: background-color 0.4s ease;
+  padding: 2rem;
   background-color: var(--bg-header-light);
-}
-.header.scrolled {
-  background-color: var(--bg-header-dark); /* Darker color when scrolled */
   transition: background-color 0.4s ease;
 }
-.header-content {
-  max-width: 960px;
+
+.header.scrolled {
+  background-color: var(--bg-header-dark);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--text);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.theme-toggle button {
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle button:hover {
+  transform: scale(1.1);
+}
+
+/* ========== MAIN ========== */
+.main-content {
+  padding-top: 8rem;
   margin: 0 auto;
 }
 
-/* MAIN */
-.main-content {
-  padding-top: 8rem; /* Adjust this value to match the height of the header */
-  max-width: 1000px;
+/* ========== HERO INTRO ========== */
+.hero {
+  background: var(--bg-hero);
+  padding: 4rem 2rem;
+  border-bottom: 2px solid var(--bg-chart);
+  margin-top: 0;
+}
+
+.hero-content {
+  max-width: 900px;
   margin: 0 auto;
-  padding-inline: 2rem;
-}
-.intro {
+  background: var(--card);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--shadow);
   text-align: center;
-  margin-bottom: 2rem;
 }
+
+.hero-content h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.hero-content p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.hero-content .highlight {
+  font-weight: bold;
+  color: var(--accent);
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+
+/* ========== CHART SECTION ========== */
 .chart-section {
-  text-align: center;
+  background: var(--bg-chart);
+  padding: 3rem 2rem;
 }
+
 .price-info {
   font-size: 1.4rem;
   font-weight: bold;
@@ -76,22 +156,22 @@ body {
   width: fit-content;
   margin-inline: auto;
 }
+
 .chart-container {
-  background: var(--card);
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px var(--shadow);
-  width: 66%;
-  max-width: 900px;
-  margin: 0 auto 2rem auto;
-  height: 400px;
+  background: var(--bg-chart);
+  padding: 1rem 0;
+  width: 100%;
+  margin: 0 auto;
+  height: 500px;
 }
+
 canvas {
   width: 100% !important;
   height: 100% !important;
+  background: var(--bg-chart);
 }
 
-/* FILTERS */
+/* ========== FILTERS ========== */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -99,27 +179,40 @@ canvas {
   align-items: center;
   margin-bottom: 2rem;
   justify-content: center;
+  padding: 2rem;
+  background: var(--bg-main);
 }
-select, button {
-  padding: 0.5rem;
+
+select,
+button {
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border-radius: 8px;
+  border: none;
   background: var(--card);
   color: var(--text);
-  transition: background 0.3s;
+  box-shadow: 0 2px 6px var(--shadow);
+  transition: all 0.3s ease;
   cursor: pointer;
 }
+
+button:hover {
+  background-color: var(--accent-bg);
+  transform: translateY(-2px);
+}
+
 button.active {
   background: var(--accent);
   color: white;
-}
-.time-filters button {
-  border: none;
-  box-shadow: 0 1px 4px var(--shadow);
+  font-weight: bold;
+  transform: scale(1.05);
 }
 
-/* FOOTER */
+.time-filters button {
+  border: none;
+}
+
+/* ========== FOOTER ========== */
 .footer {
   background-color: var(--bg-footer);
   text-align: center;
@@ -127,5 +220,4 @@ button.active {
   font-size: 0.9rem;
   color: var(--text);
   box-shadow: 0 -2px 4px var(--shadow);
-  margin-top: 4rem;
 }

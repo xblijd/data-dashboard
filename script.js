@@ -14,8 +14,8 @@ const vsCurrency = "eur";
 toggleTheme.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   toggleTheme.textContent = document.body.classList.contains("dark")
-    ? "☀️ Lichte modus"
-    : "🌙 Donkere modus";
+    ? "Dark Mode"
+    : "Light Mode";
 });
 
 // 🔁 Event Listeners
@@ -53,8 +53,20 @@ function updateChart(data) {
   const existingChart = Chart.getChart("priceChart");
   if (existingChart) existingChart.destroy();
 
-  const accent = getComputedStyle(document.body).getPropertyValue("--accent").trim();
-  const accentBg = getComputedStyle(document.body).getPropertyValue("--accent-bg").trim();
+  let accent = "";
+let accentBg = "";
+const firstValue = data[0][1];
+const lastValue = data[data.length - 1][1];
+
+const isRising = lastValue > firstValue;
+
+if (isRising) {
+  accent = "#2ecc71"; // groen
+  accentBg = "rgba(46, 204, 113, 0.2)";
+} else {
+  accent = "#e74c3c"; // rood
+  accentBg = "rgba(231, 76, 60, 0.2)";
+}
 
   if (selectedChartType === "candlestick") {
     const candlestickData = data.map(([t, o, h, l, c]) => ({
@@ -123,8 +135,21 @@ function updateChart(data) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: { y: { beginAtZero: false } }
-      }
+        scales: {
+          y: {
+            position: 'right', // 📍 Zet de y-as links
+            beginAtZero: false,
+            grid: {
+              display: false // optioneel: grid verbergen
+            }
+          },
+          x: {
+            grid: {
+              display: false // optioneel: grid verbergen
+            }
+          }
+        }
+      }         
     });
   }
 }
