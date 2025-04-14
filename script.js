@@ -54,19 +54,18 @@ function updateChart(data) {
   if (existingChart) existingChart.destroy();
 
   let accent = "";
-let accentBg = "";
-const firstValue = data[0][1];
-const lastValue = data[data.length - 1][1];
+  let accentBg = "";
+  const firstValue = data[0][1];
+  const lastValue = data[data.length - 1][1];
+  const isRising = lastValue > firstValue;
 
-const isRising = lastValue > firstValue;
-
-if (isRising) {
-  accent = "#2ecc71"; // groen
-  accentBg = "rgba(46, 204, 113, 0.2)";
-} else {
-  accent = "#e74c3c"; // rood
-  accentBg = "rgba(231, 76, 60, 0.2)";
-}
+  if (isRising) {
+    accent = "#2ecc71"; // groen
+    accentBg = "rgba(46, 204, 113, 0.2)";
+  } else {
+    accent = "#e74c3c"; // rood
+    accentBg = "rgba(231, 76, 60, 0.2)";
+  }
 
   if (selectedChartType === "candlestick") {
     const candlestickData = data.map(([t, o, h, l, c]) => ({
@@ -82,10 +81,11 @@ if (isRising) {
           data: candlestickData,
           borderColor: "rgba(0,0,0,0.6)",
           color: {
-            up: "#26a69a",     // groen bij stijging
-            down: "#ef5350",   // rood bij daling
+            up: "#26a69a",
+            down: "#ef5350",
             unchanged: "#999",
-          }
+          },
+          barThickness: 20
         }]
       },
       options: {
@@ -93,10 +93,9 @@ if (isRising) {
         maintainAspectRatio: false,
         scales: {
           x: {
+            grid: { display: false },
             type: "time",
-            time: {
-              tooltipFormat: "dd MMM yyyy HH:mm"
-            },
+            time: { tooltipFormat: "dd MMM yyyy HH:mm" },
             ticks: {
               source: 'auto',
               maxRotation: 0,
@@ -104,6 +103,8 @@ if (isRising) {
             }
           },
           y: {
+            grid: { display: false },
+            position: 'right',
             beginAtZero: false
           }
         },
@@ -137,19 +138,15 @@ if (isRising) {
         maintainAspectRatio: false,
         scales: {
           y: {
-            position: 'right', // 📍 Zet de y-as links
+            position: 'right',
             beginAtZero: false,
-            grid: {
-              display: false // optioneel: grid verbergen
-            }
+            grid: { display: false }
           },
           x: {
-            grid: {
-              display: false // optioneel: grid verbergen
-            }
+            grid: { display: false }
           }
         }
-      }         
+      }
     });
   }
 }
@@ -158,7 +155,7 @@ if (isRising) {
 async function fetchAll() {
   try {
     const priceRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${selectedCoin}&vs_currencies=${vsCurrency}`);
-    if (!priceRes.ok) throw new Error("Rate limit of CoinGecko bereikt");
+    if (!priceRes.ok) throw new Error("Rate limit van CoinGecko bereikt");
     const priceData = await priceRes.json();
     showCurrentPrice(priceData);
 
@@ -186,8 +183,70 @@ async function fetchAll() {
 
 fetchAll(); // eerste load
 
-// Scroll observer voor headerkleur
-document.addEventListener('DOMContentLoaded', () => {
+// 🧠 ML-predictie grafiek laden
+function loadForecastChart() {
+  fetch('data/predicted_btc.csv')
+    .then(response => response.text())
+    .then(data => {
+      const rows = data.trim().split('\n').slice(1);
+      const labels = [], actual = [], predicted = [];
+
+      rows.forEach(row => {
+        const [date, price, pred] = row.split(',');
+        labels.push(date);
+        actual.push(parseFloat(price));
+        predicted.push(parseFloat(pred));
+      });
+
+      const ctx = document.getElementById('forecastChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Werkelijke Prijs',
+              data: actual,
+              borderColor: '#2d6cdf',
+              tension: 0.3,
+              fill: false
+            },
+            {
+              label: 'Voorspelde Prijs',
+              data: predicted,
+              borderColor: '#ff5e57',
+              borderDash: [6, 6],
+              tension: 0.3,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Bitcoin Prijsvoorspelling (Machine Learning)'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              grid: { display: false }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    });
+}
+
+// Laad ML-voorspelling na DOM is geladen
+document.addEventListener("DOMContentLoaded", () => {
+  loadForecastChart();
+
   const header = document.querySelector('.header');
   const observerSections = document.querySelectorAll('.observer-section');
 
@@ -226,5 +285,4 @@ document.addEventListener('DOMContentLoaded', () => {
       header.classList.remove('scrolled');
     }
   });
-  
 });
