@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bitcoin ML Model Visualisatie</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="header sticky-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>BTC ML Models</h1>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Dashboard</a>
+        <a href="#">Modellen</a>
+        <a href="howmuchdidimissouton.html">Gemiste kans</a>
+      </nav>
+      <div class="crypto-selector">
+        <label for="coinSelect">Munt:</label>
+        <select id="coinSelect">
+          <option value="btc" selected>Bitcoin</option>
+          <option value="eth">Ethereum</option>
+          <option value="ada">Cardano</option>
+        </select>
+      </div>
+      <div class="theme-toggle">
+        <button id="toggleTheme">Thema</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Line chart: Actual vs Predicted -->
+    <section class="chart-section">
+      <h3>Werkelijke prijs vs Voorspelde prijs</h3>
+      <canvas id="lineChart"></canvas>
+    </section>
+
+    <!-- Error chart: Difference per day -->
+    <section class="chart-section">
+      <h3>Dagelijkse voorspelfout (in USD)</h3>
+      <canvas id="errorChart"></canvas>
+    </section>
+
+    <!-- Scatter plot: Actual vs Predicted -->
+    <section class="chart-section">
+      <h3>Verspreidingsgrafiek: Voorspeld t.o.v. Werkelijk</h3>
+      <canvas id="scatterChart"></canvas>
+    </section>
+    <section class="chart-section">
+      <h3>Nauwkeurigheid van het model</h3>
+      <canvas id="accuracyChart"></canvas>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Data Visualization Practice | Gemaakt door Xavier</p>
+  </footer>
+
+  <script>
+    // Theme toggle functionality
+    document.getElementById('toggleTheme').addEventListener('click', function() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+      updateChartColors();
+    });
+    
+    // Check for saved theme preference
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+
+    const coinSelect = document.getElementById('coinSelect');
+    let currentCoin = coinSelect.value;
+    let lineChart, errorChart, scatterChart, accuracyChart;
+    let correctCount = 75; // Example data - replace with actual values
+    let incorrectCount = 25; // Example data - replace with actual values
+
+    function getChartColors() {
+      return {
+        primary: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#2d6cdf',
+        secondary: getComputedStyle(document.documentElement).getPropertyValue('--accent-bg').trim() || 'rgba(45, 108, 223, 0.2)',
+        success: '#27ae60',
+        danger: '#e74c3c',
+        textColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#0a1c33',
+        gridColor: getComputedStyle(document.documentElement).getPropertyValue('--shadow').trim() || 'rgba(0, 0, 0, 0.1)'
+      };
+    }
+
+    function updateChartColors() {
+      const colors = getChartColors();
+      
+      if (lineChart) {
+        lineChart.data.datasets[0].borderColor = colors.primary;
+        lineChart.data.datasets[1].borderColor = colors.danger;
+        lineChart.update();
+      }
+      
+      if (errorChart) {
+        errorChart.data.datasets[0].backgroundColor = errorChart.data.datasets[0].data.map(
+          e => e >= 0 ? colors.success : colors.danger
+        );
+        errorChart.update();
+      }
+      
+      if (scatterChart) {
+        scatterChart.data.datasets[0].backgroundColor = colors.primary;
+        scatterChart.update();
+      }
+      
+      if (accuracyChart) {
+        accuracyChart.data.datasets[0].backgroundColor = [colors.success, colors.danger];
+        accuracyChart.update();
+      }
+    }
+
+    function loadPredictionData(coin) {
+      fetch(`data/predicted_${coin}.csv`)
+        .then(res => res.text())
+        .then(text => {
+          const rows = text.trim().split('\n').slice(1);
+          const labels = [], actual = [], predicted = [], errors = [], scatter = [];
+
+          rows.forEach(row => {
+            const [date, price, pred] = row.split(',');
+            const priceVal = parseFloat(price);
+            const predVal = parseFloat(pred);
+
+            labels.push(date);
+            actual.push(priceVal);
+            predicted.push(predVal);
+            errors.push(predVal - priceVal);
+            scatter.push({ x: priceVal, y: predVal });
+          });
+
+          const colors = getChartColors();
+
+          // Destroy existing charts if they exist
+          if (lineChart) lineChart.destroy();
+          if (errorChart) errorChart.destroy();
+          if (scatterChart) scatterChart.destroy();
+          if (accuracyChart) accuracyChart.destroy();
+
+          // Create new charts
+          lineChart = new Chart(document.getElementById('lineChart'), {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Werkelijke prijs',
+                  data: actual,
+                  borderColor: colors.primary,
+                  tension: 0.3,
+                  fill: false
+                },
+                {
+                  label: 'Voorspelde prijs',
+                  data: predicted,
+                  borderColor: colors.danger,
+                  borderDash: [5, 5],
+                  tension: 0.3,
+                  fill: false
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    color: colors.textColor
+                  }
+                },
+                y: {
+                  position: 'right',
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    color: colors.textColor
+                  }
+                }
+              }
+            }
+          });
+
+          errorChart = new Chart(document.getElementById('errorChart'), {
+            type: 'bar',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Voorspellingsfout',
+                  data: errors,
+                  backgroundColor: errors.map(e => e >= 0 ? colors.success : colors.danger),
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    color: colors.textColor
+                  }
+                },
+                y: {
+                  position: 'right',
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    color: colors.textColor
+                  }
+                }
+              }
+            }
+          });
+
+          scatterChart = new Chart(document.getElementById('scatterChart'), {
+            type: 'scatter',
+            data: {
+              datasets: [
+                {
+                  label: 'Voorspeld vs Werkelijk',
+                  data: scatter,
+                  backgroundColor: colors.primary
+                },
+                {
+                  label: 'Perfecte lijn',
+                  data: scatter.map(p => ({ x: p.x, y: p.x })),
+                  borderColor: colors.textColor,
+                  borderWidth: 1,
+                  type: 'line',
+                  fill: false,
+                  pointRadius: 0
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  title: { 
+                    display: true, 
+                    text: 'Werkelijke prijs (USD)',
+                    color: colors.textColor
+                  },
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    color: colors.textColor
+                  }
+                },
+                y: {
+                  position: 'right',
+                  title: { 
+                    display: true, 
+                    text: 'Voorspelde prijs (USD)',
+                    color: colors.textColor
+                  },
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    color: colors.textColor
+                  }
+                }
+              }
+            }
+          });
+
+          accuracyChart = new Chart(document.getElementById('accuracyChart'), {
+            type: 'pie',
+            data: {
+              labels: ['Correcte richting', 'Foute richting'],
+              datasets: [{
+                data: [correctCount, incorrectCount], 
+                backgroundColor: [colors.success, colors.danger]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { 
+                  position: 'bottom',
+                  labels: {
+                    color: colors.textColor
+                  }
+                }
+              }
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error loading prediction data:', error);
+          // Fallback with sample data if actual data fails to load
+          const labels = [];
+          const actual = [];
+          const predicted = [];
+          
+          for (let i = 0; i < 30; i++) {
+            labels.push(`Day ${i+1}`);
+            actual.push(30000 + Math.random() * 10000);
+            predicted.push(30000 + Math.random() * 10000);
+          }
+          
+          // Create charts with sample data
+          const colors = getChartColors();
+          
+          lineChart = new Chart(document.getElementById('lineChart'), {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Werkelijke prijs',
+                  data: actual,
+                  borderColor: colors.primary,
+                  tension: 0.3,
+                  fill: false
+                },
+                {
+                  label: 'Voorspelde prijs',
+                  data: predicted,
+                  borderColor: colors.danger,
+                  borderDash: [5, 5],
+                  tension: 0.3,
+                  fill: false
+                }
+              ]
+            }
+          });
+
+          accuracyChart = new Chart(document.getElementById('accuracyChart'), {
+            type: 'pie',
+            data: {
+              labels: ['Correcte richting', 'Foute richting'],
+              datasets: [{
+                data: [correctCount, incorrectCount], 
+                backgroundColor: [colors.success, colors.danger]
+              }]
+            }
+          });
+        });
+    }
+
+    coinSelect.addEventListener('change', () => {
+      currentCoin = coinSelect.value;
+      loadPredictionData(currentCoin);
+    });
+
+    // Load default data
+    loadPredictionData(currentCoin);
+  </script>
+</body>
+</html>

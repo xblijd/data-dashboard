@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wat had ik verdiend?</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="header sticky-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>DV Crypto DB</h1>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Dashboard</a>
+        <a href="ml-models.html">Modellen</a>
+        <a href="#">Gemiste Kans</a>
+      </nav>
+      <div class="theme-toggle">
+        <button id="toggleTheme">Thema</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="form-section">
+      <h2>Bereken wat je had kunnen verdienen</h2>
+      <p class="warning">Je kunt maximaal 1 jaar terug in de tijd kijken. Oudere data is alleen beschikbaar via een betaald API-plan.</p>
+      
+      <div class="input-group">
+        <label for="coin">Cryptomunt:</label>
+        <select id="coin">
+          <option value="bitcoin">Bitcoin</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="cardano">Cardano</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <label for="amount">Bedrag dat je zou investeren (in euro):</label>
+        <div class="amount-selector">
+          <input type="range" id="amountSlider" min="10" max="10000" value="100" step="10" 
+                 oninput="updateAmountInput(this.value)">
+          <div class="amount-input-container">
+            <input type="number" id="amountInput" value="100" min="10" max="10000"
+                   onchange="validateAmountInput(this.value)">
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label for="date">Startdatum (max 1 jaar terug):</label>
+        <div class="date-selector">
+          <input type="date" id="dateInput">
+          <div class="quick-dates">
+            <button onclick="setQuickDate(7)">1 week</button>
+            <button onclick="setQuickDate(30)">1 maand</button>
+            <button onclick="setQuickDate(90)">3 maanden</button>
+            <button onclick="setQuickDate(180)">6 maanden</button>
+            <button onclick="setQuickDate(365)">1 jaar</button>
+          </div>
+        </div>
+      </div>
+      
+      <button class="cta-button" onclick="calculate()">Bereken potentiële investering</button>
+    </section>
+
+    <section class="result-section" id="result" style="display: none;">
+      <h3>Investeringsresultaat</h3>
+      <div id="summary" class="summary-card"></div>
+      <div class="chart-container">
+        <canvas id="chart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Data Visualization Practice | Gemaakt door Xavier</p>
+  </footer>
+
+  <style>
+    .form-section, .result-section {
+      background: var(--card);
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+    
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    select, input[type="date"], input[type="number"] {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid var(--shadow);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+    }
+    
+    .amount-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    #amountSlider {
+      -webkit-appearance: none;
+      height: 8px;
+      background: var(--shadow);
+      border-radius: 4px;
+      outline: none;
+      margin: 1rem 0;
+    }
+    
+    #amountSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    .amount-input-container {
+      position: relative;
+      display: inline-block;
+      width: 150px;
+    }
+    
+    .amount-input-container input {
+      padding-right: 2rem;
+      text-align: right;
+    }
+    
+    .amount-input-container span {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text);
+    }
+    
+    .date-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .quick-dates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .quick-dates button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+      background: var(--accent-bg);
+      color: var(--text);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .quick-dates button:hover {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .warning {
+      color: #e74c3c;
+      font-size: 0.9rem;
+      padding: 0.8rem;
+      background-color: rgba(231, 76, 60, 0.1);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .summary-card {
+      background: var(--bg-main);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+    
+    .summary-item {
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .summary-item strong {
+      font-weight: 600;
+    }
+    
+    .positive {
+      color: #27ae60;
+      font-weight: bold;
+    }
+    
+    .negative {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    
+    .chart-container {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+
+  <script>
+    // Theme toggle functionality
+    document.getElementById('toggleTheme').addEventListener('click', function() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+    
+    // Check for saved theme preference
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+
+    // Initialize date input
+    const dateInput = document.getElementById("dateInput");
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() - 365);
+    dateInput.max = today.toISOString().split("T")[0];
+    dateInput.min = maxDate.toISOString().split("T")[0];
+    dateInput.value = new Date(today.setDate(today.getDate() - 7)).toISOString().split("T")[0];
+
+    // Amount input/slider synchronization
+    function updateAmountInput(value) {
+      document.getElementById('amountInput').value = value;
+    }
+    
+    function validateAmountInput(value) {
+      const amountInput = document.getElementById('amountInput');
+      const amountSlider = document.getElementById('amountSlider');
+      let numValue = parseFloat(value);
+      
+      if (isNaN(numValue)) numValue = 10;
+      if (numValue < 10) numValue = 10;
+      if (numValue > 10000) numValue = 10000;
+      
+      amountInput.value = numValue;
+      amountSlider.value = numValue;
+    }
+    
+    // Quick date buttons
+    function setQuickDate(days) {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      document.getElementById('dateInput').value = date.toISOString().split("T")[0];
+    }
+
+    // Main calculation function
+    async function calculate() {
+      const coin = document.getElementById('coin').value;
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      const startDate = document.getElementById('dateInput').value;
+
+      if (!amount || !startDate) {
+        alert('Vul alle velden correct in.');
+        return;
+      }
+
+      const from = Math.floor(new Date(startDate).getTime() / 1000);
+      const to = Math.floor(Date.now() / 1000);
+
+      const url = `https://api.coingecko.com/api/v3/coins/${coin}/market_chart/range?vs_currency=eur&from=${from}&to=${to}`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Fout bij ophalen: ${res.status} ${res.statusText}`);
+
+        const data = await res.json();
+        if (!data.prices || data.prices.length === 0) {
+          alert('Geen data beschikbaar voor deze periode.');
+          return;
+        }
+
+        const prices = data.prices;
+        const boughtPrice = prices[0][1];
+        const currentPrice = prices[prices.length - 1][1];
+        const coinsBought = amount / boughtPrice;
+        const currentValue = coinsBought * currentPrice;
+        const change = currentValue - amount;
+        const percentChange = (change / amount) * 100;
+
+        const summaryHTML = `
+          <div class="summary-item">
+            <strong>Startdatum:</strong>
+            <span>${startDate}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Beginkoers:</strong>
+            <span>€${boughtPrice.toFixed(2)}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Coins gekocht:</strong>
+            <span>${coinsBought.toFixed(4)} ${coin}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Huidige koers:</strong>
+            <span>€${currentPrice.toFixed(2)}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Beginkapitaal:</strong>
+            <span>€${amount.toFixed(2)}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Huidige waarde:</strong>
+            <span>€${currentValue.toFixed(2)}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Rendement:</strong>
+            <span class="${percentChange >= 0 ? 'positive' : 'negative'}">
+              ${percentChange.toFixed(2)}% (€${Math.abs(change).toFixed(2)})
+            </span>
+          </div>
+          <div style="margin-top: 1rem; font-style: italic; text-align: center;">
+            ${percentChange >= 0 ? 'Je investering is gegroeid.' : 'Je investering is gedaald.'}
+          </div>
+        `;
+
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('summary').innerHTML = summaryHTML;
+
+        const labels = prices.map(p => new Date(p[0]).toLocaleDateString("nl-NL"));
+        const values = prices.map(p => (p[1] * coinsBought));
+
+        const ctx = document.getElementById('chart').getContext('2d');
+        if (window.investmentChart) window.investmentChart.destroy();
+
+        const accentGreen = '#27ae60';
+const bgGreen = 'rgba(39, 174, 96, 0.2)';
+const accentRed = '#e74c3c';
+const bgRed = 'rgba(231, 76, 60, 0.2)';
+
+const borderColor = percentChange >= 0 ? accentGreen : accentRed;
+const backgroundColor = percentChange >= 0 ? bgGreen : bgRed;
+
+window.investmentChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [{
+      label: `Waarde van je investering in €`,
+      data: values,
+      borderColor,
+      backgroundColor,
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { 
+        position: 'right', 
+        grid: { display: false },
+        ticks: {
+          callback: function(value) {
+            return '€' + value.toFixed(2);
+          }
+        }
+      },
+      x: { grid: { display: false } }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return '€' + context.raw.toFixed(2);
+          }
+        }
+      }
+    }
+  }
+});
+
+      } catch (error) {
+        console.error('Fout:', error);
+        alert('Er ging iets mis bij het ophalen van de data.\n' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
