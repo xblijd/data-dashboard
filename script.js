@@ -231,6 +231,7 @@ function loadForecastChart() {
           },
           scales: {
             y: {
+              position: 'right',
               beginAtZero: false,
               grid: { display: false }
             },
